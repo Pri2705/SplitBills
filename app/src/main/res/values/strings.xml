@@ -3,4 +3,9 @@
     <string name="my_prefs">My Shared Preferences</string>
     <string name="phoneNumSaved">Phone number saved</string>
     <string name="tabTitle">Tab Title</string>
+    <string name="username">Username</string>
+    <string name="phoneNum">Phone Number</string>
+    <string name="photoUrl">Photo Url</string>
+    <string name="email">User email</string>
+    <string name="userUID">User UID</string>
 </resources>

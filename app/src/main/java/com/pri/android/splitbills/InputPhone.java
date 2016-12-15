@@ -18,6 +18,7 @@ public class InputPhone extends AppCompatActivity {
 
     private FirebaseDatabase mFirebaseDatabase;
     private DatabaseReference mUsersDatabaseRef;
+    private DatabaseReference mUserDetailsDatabaseRef;
 
     private String mUID;
 
@@ -35,18 +36,37 @@ public class InputPhone extends AppCompatActivity {
 
         mFirebaseDatabase = FirebaseDatabase.getInstance();
         mUsersDatabaseRef = mFirebaseDatabase.getReference().child("Users");
+        mUserDetailsDatabaseRef = mFirebaseDatabase.getReference().child("User Details");
 
         mProgressDialog = new ProgressDialog(this);
 
         mSubmitBt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mUsersDatabaseRef.child(mUID).child("phone").setValue(mPhoneNumEt.getText().toString());
                 SharedPreferences.Editor editor = getSharedPreferences(getString(R.string.my_prefs), MODE_PRIVATE).edit();
+                editor.putString(getString(R.string.phoneNum), mPhoneNumEt.getText().toString());
                 editor.putBoolean(getString(R.string.phoneNumSaved), true);
                 editor.commit();
+                addToFirebaseDatabase();
                 finish();
             }
         });
+    }
+
+    private void addToFirebaseDatabase() {
+        SharedPreferences sharedPreferences = getSharedPreferences(getString(R.string.my_prefs), MODE_PRIVATE);
+        String username = sharedPreferences.getString(getString(R.string.username), "");
+        String phoneNum = sharedPreferences.getString(getString(R.string.phoneNum), "");
+        String email = sharedPreferences.getString(getString(R.string.email), "");
+        String uid = sharedPreferences.getString(getString(R.string.userUID), "");
+        String photoUrl = sharedPreferences.getString(getString(R.string.photoUrl), "");
+        email = email.replace('.', ',');
+        mUsersDatabaseRef.child(email).child("phone").setValue(phoneNum);
+        mUsersDatabaseRef.child(email).child("name").setValue(username);
+        mUsersDatabaseRef.child(email).child("photoUrl").setValue(photoUrl);
+        mUsersDatabaseRef.child(email).child("uid").setValue(uid);
+        mUserDetailsDatabaseRef.child("Groups");
+        mUserDetailsDatabaseRef.child("Friends");
+        mUserDetailsDatabaseRef.child("ReceivedNotifications");
     }
 }

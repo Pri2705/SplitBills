@@ -3,8 +3,13 @@ package com.pri.android.splitbills;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.ProgressBar;
 import android.widget.Toast;
@@ -34,6 +39,9 @@ public class MainActivity extends AppCompatActivity {
     private static final String ANONYMOUS = "Anonymous";
     private String mUsername;
     private String mUID;
+    private String mEmail;
+    private String mPhotoUrl;
+    private String mPhone;
 //
 //    private TextView mUsernameTv;
 //    private Button signOutBt;
@@ -56,13 +64,18 @@ public class MainActivity extends AppCompatActivity {
         mProgressBar = (ProgressBar)findViewById(R.id.progressBar);
         mProgressBar.setVisibility(ProgressBar.INVISIBLE);
 
+
+        ViewPager vpPager = (ViewPager) findViewById(R.id.vpPager);
+        FragmentPagerAdapter adapterViewPager = new MyPagerAdapter(getSupportFragmentManager());
+        vpPager.setAdapter(adapterViewPager);
+
         mAuthStateListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
                 if(user != null){
                     //signed in
-                    onSignedInInitialize(user.getDisplayName(), user.getUid());
+                    onSignedInInitialize(user.getDisplayName(), user.getUid(), user.getEmail(), user.getPhotoUrl());
                 }else{
                     //signed out
                     onSignedOutCleanup();
@@ -118,10 +131,19 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void onSignedInInitialize(String displayName, String uid) {
+    private void onSignedInInitialize(String displayName, String uid, String email, Uri photoUrl) {
         //what to do on signin
         mUsername = displayName;
         mUID = uid;
+        mPhotoUrl = photoUrl.toString();
+        mEmail = email;
+        SharedPreferences.Editor editor = getSharedPreferences(getString(R.string.my_prefs), MODE_PRIVATE).edit();
+        editor.putString(getString(R.string.username), mUsername);
+        editor.putString(getString(R.string.userUID), mUID);
+        editor.putString(getString(R.string.email), mEmail);
+        editor.putString(getString(R.string.photoUrl), mPhotoUrl);
+        editor.commit();
+
         checkUserExists();
 //        mUsernameTv.setText(mUsername);
     }
@@ -137,11 +159,11 @@ public class MainActivity extends AppCompatActivity {
         if(sharedPreferences.getBoolean(getString(R.string.phoneNumSaved), false) == false) {
             mProgress.setMessage("Checking Account...");
             mProgress.show();
-
             mUsersDatabaseReference.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
-                    if (!dataSnapshot.hasChild(mUID)) {
+                    String email = mEmail.replace('.', ',');
+                    if (!dataSnapshot.hasChild(email)) {
                         mProgress.dismiss();
                         Intent inputPhoneIntent = new Intent(MainActivity.this, InputPhone.class);
                         inputPhoneIntent.putExtra("mUID", mUID);
@@ -159,45 +181,46 @@ public class MainActivity extends AppCompatActivity {
 
                 }
             });
+
         }
     }
 
 
-//    public class MyPagerAdapter extends FragmentPagerAdapter {
-//        private int NUM_ITEMS = 3;
+    public class MyPagerAdapter extends FragmentPagerAdapter {
+        private int NUM_ITEMS = 3;
 
-//        public MyPagerAdapter(FragmentManager fragmentManager) {
-//            super(fragmentManager);
-//        }
-//
-//        // Returns total number of pages
-//        @Override
-//        public int getCount() {
-//            return NUM_ITEMS;
-//        }
-//
-//        // Returns the fragment to display for that page
-//        @Override
-//        public Fragment getItem(int position) {
-//            switch (position) {
-//                case 0: // Fragment # 0 - This will show FirstFragment
-////                    return FirstFragment.newInstance(0, "Page # 1");
-//                case 1: // Fragment # 0 - This will show FirstFragment different title
-//                    return Groups.newInstance("Current Group", MainActivity.this);
-//                case 2: // Fragment # 1 - This will show SecondFragment
-////                    return SecondFragment.newInstance(2, "Page # 3");
-//                default:
-//                    return null;
-//            }
-//        }
-//
-//        // Returns the page title for the top indicator
-//        @Override
-//        public CharSequence getPageTitle(int position) {
-//            return "Page " + position;
-//        }
-//
-//    }
+        public MyPagerAdapter(FragmentManager fragmentManager) {
+            super(fragmentManager);
+        }
+
+        // Returns total number of pages
+        @Override
+        public int getCount() {
+            return NUM_ITEMS;
+        }
+
+        // Returns the fragment to display for that page
+        @Override
+        public Fragment getItem(int position) {
+            switch (position) {
+                case 0: // Fragment # 0 - This will show FirstFragment
+//                    return FirstFragment.newInstance(0, "Page # 1");
+                case 1: // Fragment # 0 - This will show FirstFragment different title
+                    return GroupsFragment.newInstance("Current Group", MainActivity.this);
+                case 2: // Fragment # 1 - This will show SecondFragment
+//                    return SecondFragment.newInstance(2, "Page # 3");
+                default:
+                    return null;
+            }
+        }
+
+        // Returns the page title for the top indicator
+        @Override
+        public CharSequence getPageTitle(int position) {
+            return "Page " + position;
+        }
+
+    }
 
 
     @Override

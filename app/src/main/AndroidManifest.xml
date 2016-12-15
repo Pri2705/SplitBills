@@ -15,7 +15,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".InputPhone"></activity>
+        <activity android:name=".InputPhone" />
+        <activity android:name=".GroupDetailsActivity" />
+        <activity android:name=".NewGroupActivity"></activity>
     </application>
 
 </manifest>
