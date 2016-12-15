@@ -2,4 +2,5 @@
     <string name="app_name">Split Bills</string>
     <string name="my_prefs">My Shared Preferences</string>
     <string name="phoneNumSaved">Phone number saved</string>
+    <string name="tabTitle">Tab Title</string>
 </resources>

@@ -6,10 +6,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.view.View;
-import android.widget.Button;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthUI;
@@ -37,9 +34,9 @@ public class MainActivity extends AppCompatActivity {
     private static final String ANONYMOUS = "Anonymous";
     private String mUsername;
     private String mUID;
-
-    private TextView mUsernameTv;
-    private Button signOutBt;
+//
+//    private TextView mUsernameTv;
+//    private Button signOutBt;
 
     private ProgressDialog mProgress;
     private ProgressBar mProgressBar;
@@ -47,9 +44,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        mUsernameTv = (TextView)findViewById(R.id.usernameTv);
-        signOutBt = (Button)findViewById(R.id.signoutBt);
+//
+//        mUsernameTv = (TextView)findViewById(R.id.usernameTv);
+//        signOutBt = (Button)findViewById(R.id.signoutBt);
 
         mFirebaseAuth = FirebaseAuth.getInstance();
         mFirebaseDatabase = FirebaseDatabase.getInstance();
@@ -80,13 +77,13 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         };
-
-        signOutBt.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                signout();
-            }
-        });
+//
+//        signOutBt.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                signout();
+//            }
+//        });
     }
 
     private void signout() {
@@ -126,7 +123,7 @@ public class MainActivity extends AppCompatActivity {
         mUsername = displayName;
         mUID = uid;
         checkUserExists();
-        mUsernameTv.setText(mUsername);
+//        mUsernameTv.setText(mUsername);
     }
 
     private void checkUserExists() {
@@ -164,6 +161,44 @@ public class MainActivity extends AppCompatActivity {
             });
         }
     }
+
+
+//    public class MyPagerAdapter extends FragmentPagerAdapter {
+//        private int NUM_ITEMS = 3;
+
+//        public MyPagerAdapter(FragmentManager fragmentManager) {
+//            super(fragmentManager);
+//        }
+//
+//        // Returns total number of pages
+//        @Override
+//        public int getCount() {
+//            return NUM_ITEMS;
+//        }
+//
+//        // Returns the fragment to display for that page
+//        @Override
+//        public Fragment getItem(int position) {
+//            switch (position) {
+//                case 0: // Fragment # 0 - This will show FirstFragment
+////                    return FirstFragment.newInstance(0, "Page # 1");
+//                case 1: // Fragment # 0 - This will show FirstFragment different title
+//                    return Groups.newInstance("Current Group", MainActivity.this);
+//                case 2: // Fragment # 1 - This will show SecondFragment
+////                    return SecondFragment.newInstance(2, "Page # 3");
+//                default:
+//                    return null;
+//            }
+//        }
+//
+//        // Returns the page title for the top indicator
+//        @Override
+//        public CharSequence getPageTitle(int position) {
+//            return "Page " + position;
+//        }
+//
+//    }
+
 
     @Override
     protected void onPause() {
