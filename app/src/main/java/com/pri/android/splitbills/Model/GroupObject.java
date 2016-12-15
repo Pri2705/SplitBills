@@ -1,4 +1,4 @@
-package com.pri.android.splitbills;
+package com.pri.android.splitbills.Model;
 
 import java.io.Serializable;
 

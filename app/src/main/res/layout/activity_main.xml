@@ -8,7 +8,7 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.pri.android.splitbills.MainActivity">
+    tools:context="com.pri.android.splitbills.Activity.MainActivity">
 
     <android.support.v4.view.ViewPager
         android:id="@+id/vpPager"

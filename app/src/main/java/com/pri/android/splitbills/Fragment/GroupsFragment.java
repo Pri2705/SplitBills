@@ -1,4 +1,4 @@
-package com.pri.android.splitbills;
+package com.pri.android.splitbills.Fragment;
 
 import android.content.Context;
 import android.content.Intent;
@@ -14,6 +14,10 @@ import android.view.ViewGroup;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.pri.android.splitbills.Activity.GroupDetailsActivity;
+import com.pri.android.splitbills.Model.GroupObject;
+import com.pri.android.splitbills.GroupsHolder;
+import com.pri.android.splitbills.R;
 
 /**
  * A fragment representing a list of Items.

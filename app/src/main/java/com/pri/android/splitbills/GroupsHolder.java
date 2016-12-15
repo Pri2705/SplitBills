@@ -14,7 +14,7 @@ public class GroupsHolder extends RecyclerView.ViewHolder {
     private final TextView mGroupNameField;
     private final TextView mLastBillNameField;
     private final TextView mLastBillDateField;
-    final View mView;
+    public final View mView;
 
     public GroupsHolder(View itemView) {
         super(itemView);

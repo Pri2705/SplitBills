@@ -1,4 +1,4 @@
-package com.pri.android.splitbills;
+package com.pri.android.splitbills.Activity;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -24,6 +24,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.pri.android.splitbills.Fragment.GroupsFragment;
+import com.pri.android.splitbills.R;
 
 import java.util.Arrays;
 
@@ -150,7 +152,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void checkUserExists() {
 //        if(mUsersDatabaseReference.orderByKey().equalTo(mUID) == null){
-//            Intent inputPhoneIntent = new Intent(MainActivity.this, InputPhone.class);
+//            Intent inputPhoneIntent = new Intent(MainActivity.this, InputPhoneActivity.class);
 //            inputPhoneIntent.putExtra("mUID", mUID);
 //            startActivity(inputPhoneIntent);
 //        }
@@ -165,7 +167,7 @@ public class MainActivity extends AppCompatActivity {
                     String email = mEmail.replace('.', ',');
                     if (!dataSnapshot.hasChild(email)) {
                         mProgress.dismiss();
-                        Intent inputPhoneIntent = new Intent(MainActivity.this, InputPhone.class);
+                        Intent inputPhoneIntent = new Intent(MainActivity.this, InputPhoneActivity.class);
                         inputPhoneIntent.putExtra("mUID", mUID);
                         startActivity(inputPhoneIntent);
                     } else {

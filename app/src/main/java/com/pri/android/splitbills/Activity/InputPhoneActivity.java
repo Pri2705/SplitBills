@@ -1,4 +1,4 @@
-package com.pri.android.splitbills;
+package com.pri.android.splitbills.Activity;
 
 import android.app.ProgressDialog;
 import android.content.SharedPreferences;
@@ -10,8 +10,9 @@ import android.widget.EditText;
 
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.pri.android.splitbills.R;
 
-public class InputPhone extends AppCompatActivity {
+public class InputPhoneActivity extends AppCompatActivity {
 
     private EditText mPhoneNumEt;
     private Button mSubmitBt;
