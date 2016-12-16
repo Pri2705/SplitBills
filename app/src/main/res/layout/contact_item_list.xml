@@ -9,6 +9,8 @@
     android:layout_height="match_parent"
     android:layout_marginLeft="16dp"
     android:layout_marginRight="16dp"
+    android:paddingTop="5dp"
+    android:scrollbars="vertical"
     app:layoutManager="LinearLayoutManager"
-    tools:context="com.pri.android.splitbills.ContactsFragment"
+    tools:context="Fragment.ContactsFragment"
     tools:listitem="@layout/contact_item" />

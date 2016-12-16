@@ -24,12 +24,16 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.pri.android.splitbills.ContactsAdapter;
+import com.pri.android.splitbills.Fragment.ContactsFragment;
 import com.pri.android.splitbills.Fragment.GroupsFragment;
+import com.pri.android.splitbills.InviteDialog;
 import com.pri.android.splitbills.R;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements ContactsAdapter.OnListFragmentInteractionListener, ContactsFragment.GetContactsInterfce {
 
 
     private FirebaseAuth mFirebaseAuth;
@@ -44,12 +48,15 @@ public class MainActivity extends AppCompatActivity {
     private String mEmail;
     private String mPhotoUrl;
     private String mPhone;
+    private InviteDialog inviteDialog;
 //
 //    private TextView mUsernameTv;
 //    private Button signOutBt;
 
     private ProgressDialog mProgress;
     private ProgressBar mProgressBar;
+    private ArrayList<ContactsFragment.ContactClass> contactClass;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
         mUsersDatabaseReference = mFirebaseDatabase.getReference().child("Users");
 
         mProgress = new ProgressDialog(this);
-        mProgressBar = (ProgressBar)findViewById(R.id.progressBar);
+        mProgressBar = (ProgressBar) findViewById(R.id.progressBar);
         mProgressBar.setVisibility(ProgressBar.INVISIBLE);
 
 
@@ -75,10 +82,10 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
-                if(user != null){
+                if (user != null) {
                     //signed in
                     onSignedInInitialize(user.getDisplayName(), user.getUid(), user.getEmail(), user.getPhotoUrl());
-                }else{
+                } else {
                     //signed out
                     onSignedOutCleanup();
                     startActivityForResult(
@@ -158,7 +165,7 @@ public class MainActivity extends AppCompatActivity {
 //        }
 
         final SharedPreferences sharedPreferences = getSharedPreferences(getString(R.string.my_prefs), MODE_PRIVATE);
-        if(sharedPreferences.getBoolean(getString(R.string.phoneNumSaved), false) == false) {
+        if (sharedPreferences.getBoolean(getString(R.string.phoneNumSaved), false) == false) {
             mProgress.setMessage("Checking Account...");
             mProgress.show();
             mUsersDatabaseReference.addValueEventListener(new ValueEventListener() {
@@ -187,6 +194,21 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void onListFragmentInteraction(int position) {
+        inviteDialog = new InviteDialog();
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("ContactDetails", contactClass.get(position));
+        inviteDialog.setArguments(bundle);
+        inviteDialog.show(getFragmentManager(), "Time Picker");
+
+    }
+
+    @Override
+    public void getContact(ArrayList<ContactsFragment.ContactClass> contacts) {
+        contactClass = contacts;
+    }
+
 
     public class MyPagerAdapter extends FragmentPagerAdapter {
         private int NUM_ITEMS = 3;
@@ -210,7 +232,7 @@ public class MainActivity extends AppCompatActivity {
                 case 1: // Fragment # 0 - This will show FirstFragment different title
                     return GroupsFragment.newInstance("Current Group", MainActivity.this);
                 case 2: // Fragment # 1 - This will show SecondFragment
-//                    return SecondFragment.newInstance(2, "Page # 3");
+                    return ContactsFragment.newInstance("Contacts", MainActivity.this);
                 default:
                     return null;
             }
