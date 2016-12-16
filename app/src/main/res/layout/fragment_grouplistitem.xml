@@ -15,7 +15,7 @@
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:weightSum="2">
+        android:weightSum="1.5">
 
         <TextView
             android:text="Last Bill Name"
@@ -29,7 +29,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:id="@+id/last_bill_date"
-            android:layout_weight="1" />
+            android:layout_weight=".5" />
     </LinearLayout>
 
 </LinearLayout>

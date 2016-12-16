@@ -1,5 +1,6 @@
 package com.pri.android.splitbills.Fragment;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -7,16 +8,23 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.Toast;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.pri.android.splitbills.Activity.GroupDetailsActivity;
-import com.pri.android.splitbills.Model.GroupObject;
+import com.pri.android.splitbills.Activity.NewGroupActivity;
 import com.pri.android.splitbills.GroupsHolder;
+import com.pri.android.splitbills.Model.GroupObject;
 import com.pri.android.splitbills.R;
 
 /**
@@ -32,8 +40,12 @@ public class GroupsFragment extends Fragment {
     private OnListFragmentInteractionListener mListener;
     private FirebaseRecyclerAdapter mAdapter;
     private FirebaseDatabase mFirebaseDatabase;
+    private DatabaseReference mGroupsDatabaseRef;
     private DatabaseReference mDatabaseRef;
-    private String mUsername;
+    private String mEmail;
+
+    private Button newGroupBt;
+    private ProgressDialog mProgress;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -67,36 +79,94 @@ public class GroupsFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_groups, container, false);
 
+        newGroupBt = (Button)view.findViewById(R.id.newGroupBt);
+
         SharedPreferences sharedPreferences = getContext().getSharedPreferences(getString(R.string.my_prefs), getContext().MODE_PRIVATE);
-        mUsername = sharedPreferences.getString(getString(R.string.username), "Anonymous");
+        mEmail = sharedPreferences.getString(getString(R.string.email), "");
+        mEmail = mEmail.replace('.', ',');
 
         mFirebaseDatabase = FirebaseDatabase.getInstance();
-        mDatabaseRef = mFirebaseDatabase.getReference().child("UserDetails").child(mUsername).child("Groups");
+        mDatabaseRef = mFirebaseDatabase.getReference();
+        mGroupsDatabaseRef = mFirebaseDatabase.getReference().child("UserDetails").child(mEmail).child("Groups");
 
         // Set the adapter
             Context context = view.getContext();
-            RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.recyclerViewGroups);
+            final RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.recyclerViewGroups);
             recyclerView.setLayoutManager(new LinearLayoutManager(context));
 
-        mAdapter = new FirebaseRecyclerAdapter<GroupObject, GroupsHolder>(GroupObject.class, R.layout.fragment_grouplistitem, GroupsHolder.class, mDatabaseRef) {
+        mProgress = new ProgressDialog(getContext());
+        mProgress.setMessage("Loading...");
+        mProgress.show();
+
+        mDatabaseRef.addValueEventListener(new ValueEventListener() {
             @Override
-            protected void populateViewHolder(GroupsHolder viewHolder, final GroupObject model, int position) {
-                viewHolder.setmGroupNameField(model.getGroupName());
-                viewHolder.setmLastBillNameField(model.getLastTransactionName());
-                viewHolder.setmLastBillDateField(model.getLastTransactionDate());
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if(dataSnapshot.hasChild("UserDetails")){
+                    if(dataSnapshot.child("UserDetails").hasChild(mEmail)){
+                        if (dataSnapshot.child("UserDetails").child(mEmail).hasChild("Groups")){
+                            mAdapter = new FirebaseRecyclerAdapter<GroupObject, GroupsHolder>(GroupObject.class, R.layout.fragment_grouplistitem, GroupsHolder.class, mGroupsDatabaseRef) {
+                                @Override
+                                protected void populateViewHolder(GroupsHolder viewHolder, final GroupObject model, int position) {
+                                    mProgress.dismiss();
+                                    viewHolder.setmGroupNameField(model.getGroupName());
+                                    Log.v("lastTransactionName", "" + model.getLastTransactionName());
+                                    Toast.makeText(getContext(), ""+ model.getLastTransactionName(), Toast.LENGTH_SHORT).show();
+                                    if(model.getLastTransactionName() != "NA"){
+                                        viewHolder.setmLastBillNameField(model.getLastTransactionName());
+                                    }else{
+                                        viewHolder.setmLastBillNameField("Created By: "+ model.getCreatedBy());
+                                    }
+                                    if(model.getLastTransactionDate() == "NA"){
+                                        viewHolder.setmLastBillDateField(model.getCreatedDate());
+                                    }else {
+                                        viewHolder.setmLastBillDateField(model.getLastTransactionDate());
+                                    }
 
-                viewHolder.mView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        Intent groupDetailsIntent = new Intent(getActivity(), GroupDetailsActivity.class);
-                        groupDetailsIntent.putExtra("GroupObject", model);
-                        startActivity(groupDetailsIntent);
+                                    viewHolder.mView.setOnClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View view) {
+                                            Intent groupDetailsIntent = new Intent(getActivity(), GroupDetailsActivity.class);
+                                            groupDetailsIntent.putExtra("GroupObject", model);
+                                            startActivity(groupDetailsIntent);
+                                        }
+                                    });
+                                }
+                            };
+
+                            mAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
+                                @Override
+                                public void onItemRangeInserted(int positionStart, int itemCount) {
+                                    super.onItemRangeInserted(positionStart, itemCount);
+                                    int friendlyMessageCount = mAdapter.getItemCount();
+                                }
+                            });
+
+                            recyclerView.setAdapter(mAdapter);
+
+                        }else{
+                            mProgress.dismiss();
+                        }
+                    }else {
+                        mProgress.dismiss();
                     }
-                });
+                }else{
+                    mProgress.dismiss();
+                }
             }
-        };
 
-            recyclerView.setAdapter(mAdapter);
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+
+        newGroupBt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(getActivity(), NewGroupActivity.class));
+            }
+        });
 
         return view;
     }

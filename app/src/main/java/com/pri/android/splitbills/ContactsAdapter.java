@@ -1,4 +1,4 @@
-package com.pri.android.splitbills.adapters;
+package com.pri.android.splitbills;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -6,9 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.pri.android.splitbills.ContactsFragment;
-import com.pri.android.splitbills.R;
-import com.pri.android.splitbills.dummy.DummyContent.DummyItem;
+import com.pri.android.splitbills.Fragment.ContactsFragment;
 
 import java.util.List;
 
@@ -59,7 +57,6 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.ViewHo
         public final View mView;
         public final TextView mIdView;
         public final TextView mContentView;
-        public DummyItem mItem;
 
         public ViewHolder(View view) {
             super(view);

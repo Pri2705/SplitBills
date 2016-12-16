@@ -71,4 +71,13 @@ public class GroupObject implements Serializable {
     private Boolean SettlementStatus;
     private Boolean CreationStatus;
     private String CreatedDate;
+    private String GroupID;
+
+    public String getGroupID() {
+        return GroupID;
+    }
+
+    public void setGroupID(String groupID) {
+        GroupID = groupID;
+    }
 }

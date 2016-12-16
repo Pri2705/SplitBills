@@ -1,4 +1,4 @@
-package com.pri.android.splitbills;
+package com.pri.android.splitbills.Fragment;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -14,7 +14,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.pri.android.splitbills.adapters.ContactsAdapter;
+import com.pri.android.splitbills.R;
+import com.pri.android.splitbills.ContactsAdapter;
 
 import java.util.ArrayList;
 import java.util.List;

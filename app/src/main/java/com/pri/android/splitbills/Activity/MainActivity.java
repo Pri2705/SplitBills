@@ -189,7 +189,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     public class MyPagerAdapter extends FragmentPagerAdapter {
-        private int NUM_ITEMS = 3;
+        private int NUM_ITEMS = 1;
 
         public MyPagerAdapter(FragmentManager fragmentManager) {
             super(fragmentManager);
@@ -205,11 +205,11 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public Fragment getItem(int position) {
             switch (position) {
-                case 0: // Fragment # 0 - This will show FirstFragment
+//                case 0: // Fragment # 0 - This will show FirstFragment
 //                    return FirstFragment.newInstance(0, "Page # 1");
-                case 1: // Fragment # 0 - This will show FirstFragment different title
+                case 0: // Fragment # 0 - This will show FirstFragment different title
                     return GroupsFragment.newInstance("Current Group", MainActivity.this);
-                case 2: // Fragment # 1 - This will show SecondFragment
+//                case 2: // Fragment # 1 - This will show SecondFragment
 //                    return SecondFragment.newInstance(2, "Page # 3");
                 default:
                     return null;
