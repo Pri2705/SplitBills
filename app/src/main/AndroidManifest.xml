@@ -17,7 +17,9 @@
         </activity>
         <activity android:name=".Activity.InputPhoneActivity" />
         <activity android:name=".Activity.GroupDetailsActivity" />
-        <activity android:name=".Activity.NewGroupActivity"></activity>
+        <activity android:name=".Activity.NewGroupActivity" />
+        <activity android:name=".Activity.BillDetailActivity" />
+        <activity android:name=".Activity.NewBillActivity"></activity>
     </application>
 
 </manifest>

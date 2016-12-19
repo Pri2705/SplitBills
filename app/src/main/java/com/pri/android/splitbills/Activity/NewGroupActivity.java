@@ -11,6 +11,7 @@ import android.widget.Toast;
 
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.pri.android.splitbills.Fragment.GroupsFragment;
 import com.pri.android.splitbills.Model.GroupObject;
 import com.pri.android.splitbills.R;
 
@@ -55,7 +56,6 @@ public class NewGroupActivity extends AppCompatActivity {
                 newGroup.setLastTransactionName("NA");
                 newGroup.setLastTransactionDate("NA");
                 Calendar c = Calendar.getInstance();
-//                System.out.println("Current time => " + c.getTime());
                 SimpleDateFormat df = new SimpleDateFormat("dd-MMM-yyyy");
                 String formattedDate = df.format(c.getTime());
                 newGroup.setCreatedDate(formattedDate);
@@ -65,6 +65,7 @@ public class NewGroupActivity extends AppCompatActivity {
                 newGroup.setGroupID(db_ref.getKey());
                 db_ref.setValue(newGroup);
                 mDatabaseRef.child(db_ref.getKey()).child("Users").child(email_replaced).child("Join Status").setValue(true);
+                GroupsFragment.mAdapter.notifyDataSetChanged();
                 finish();
             }
         });

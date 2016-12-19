@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -38,14 +39,19 @@ public class GroupsFragment extends Fragment {
     private String mTitle;
     private Context mContext;
     private OnListFragmentInteractionListener mListener;
-    private FirebaseRecyclerAdapter mAdapter;
+    public static FirebaseRecyclerAdapter mAdapter;
     private FirebaseDatabase mFirebaseDatabase;
     private DatabaseReference mGroupsDatabaseRef;
     private DatabaseReference mDatabaseRef;
     private String mEmail;
 
+    private DividerItemDecoration mDividerItemDecoration;
+    private LinearLayoutManager mLayoutManager;
+
     private Button newGroupBt;
     private ProgressDialog mProgress;
+
+    private RecyclerView mrecyclerView;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -90,9 +96,10 @@ public class GroupsFragment extends Fragment {
         mGroupsDatabaseRef = mFirebaseDatabase.getReference().child("UserDetails").child(mEmail).child("Groups");
 
         // Set the adapter
-            Context context = view.getContext();
-            final RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.recyclerViewGroups);
-            recyclerView.setLayoutManager(new LinearLayoutManager(context));
+        Context context = view.getContext();
+        mrecyclerView = (RecyclerView) view.findViewById(R.id.recyclerViewGroups);
+        mLayoutManager = new LinearLayoutManager(context);
+        mrecyclerView.setLayoutManager(mLayoutManager);
 
         mProgress = new ProgressDialog(getContext());
         mProgress.setMessage("Loading...");
@@ -104,53 +111,19 @@ public class GroupsFragment extends Fragment {
                 if(dataSnapshot.hasChild("UserDetails")){
                     if(dataSnapshot.child("UserDetails").hasChild(mEmail)){
                         if (dataSnapshot.child("UserDetails").child(mEmail).hasChild("Groups")){
-                            mAdapter = new FirebaseRecyclerAdapter<GroupObject, GroupsHolder>(GroupObject.class, R.layout.fragment_grouplistitem, GroupsHolder.class, mGroupsDatabaseRef) {
-                                @Override
-                                protected void populateViewHolder(GroupsHolder viewHolder, final GroupObject model, int position) {
-                                    mProgress.dismiss();
-                                    viewHolder.setmGroupNameField(model.getGroupName());
-                                    Log.v("lastTransactionName", "" + model.getLastTransactionName());
-                                    Toast.makeText(getContext(), ""+ model.getLastTransactionName(), Toast.LENGTH_SHORT).show();
-                                    if(model.getLastTransactionName() != "NA"){
-                                        viewHolder.setmLastBillNameField(model.getLastTransactionName());
-                                    }else{
-                                        viewHolder.setmLastBillNameField("Created By: "+ model.getCreatedBy());
-                                    }
-                                    if(model.getLastTransactionDate() == "NA"){
-                                        viewHolder.setmLastBillDateField(model.getCreatedDate());
-                                    }else {
-                                        viewHolder.setmLastBillDateField(model.getLastTransactionDate());
-                                    }
-
-                                    viewHolder.mView.setOnClickListener(new View.OnClickListener() {
-                                        @Override
-                                        public void onClick(View view) {
-                                            Intent groupDetailsIntent = new Intent(getActivity(), GroupDetailsActivity.class);
-                                            groupDetailsIntent.putExtra("GroupObject", model);
-                                            startActivity(groupDetailsIntent);
-                                        }
-                                    });
-                                }
-                            };
-
-                            mAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
-                                @Override
-                                public void onItemRangeInserted(int positionStart, int itemCount) {
-                                    super.onItemRangeInserted(positionStart, itemCount);
-                                    int friendlyMessageCount = mAdapter.getItemCount();
-                                }
-                            });
-
-                            recyclerView.setAdapter(mAdapter);
+                            setAndPopulateAdapter();
 
                         }else{
                             mProgress.dismiss();
+                            setAndPopulateAdapter();
                         }
                     }else {
                         mProgress.dismiss();
+                        setAndPopulateAdapter();
                     }
                 }else{
                     mProgress.dismiss();
+                    setAndPopulateAdapter();
                 }
             }
 
@@ -169,6 +142,50 @@ public class GroupsFragment extends Fragment {
         });
 
         return view;
+    }
+
+    private void setAndPopulateAdapter() {
+        mAdapter = new FirebaseRecyclerAdapter<GroupObject, GroupsHolder>(GroupObject.class, R.layout.fragment_grouplistitem, GroupsHolder.class, mGroupsDatabaseRef) {
+            @Override
+            protected void populateViewHolder(GroupsHolder viewHolder, final GroupObject model, int position) {
+                mProgress.dismiss();
+                viewHolder.setmGroupNameField(model.getGroupName());
+                Log.v("lastTransactionName", "" + model.getLastTransactionName());
+                Toast.makeText(getContext(), ""+ model.getLastTransactionName(), Toast.LENGTH_SHORT).show();
+                if(model.getLastTransactionName() != "NA"){
+                    viewHolder.setmLastBillNameField(model.getLastTransactionName());
+                }else{
+                    viewHolder.setmLastBillNameField("Created By: "+ model.getCreatedBy());
+                }
+                if(model.getLastTransactionDate() == "NA"){
+                    viewHolder.setmLastBillDateField(model.getCreatedDate());
+                }else {
+                    viewHolder.setmLastBillDateField(model.getLastTransactionDate());
+                }
+
+                viewHolder.mView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Intent groupDetailsIntent = new Intent(getActivity(), GroupDetailsActivity.class);
+                        groupDetailsIntent.putExtra("GroupObject", model);
+                        startActivity(groupDetailsIntent);
+                    }
+                });
+            }
+        };
+
+        mAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
+            @Override
+            public void onItemRangeInserted(int positionStart, int itemCount) {
+                super.onItemRangeInserted(positionStart, itemCount);
+                int friendlyMessageCount = mAdapter.getItemCount();
+            }
+        });
+
+        mrecyclerView.setAdapter(mAdapter);
+        mDividerItemDecoration = new DividerItemDecoration(mrecyclerView.getContext(),
+                mLayoutManager.getOrientation());
+        mrecyclerView.addItemDecoration(mDividerItemDecoration);
     }
 
 
@@ -203,5 +220,11 @@ public class GroupsFragment extends Fragment {
     public interface OnListFragmentInteractionListener {
         // TODO: Update argument type and name
 //        void onListFragmentInteraction(DummyItem item);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        mrecyclerView.getRecycledViewPool().clear();
     }
 }
