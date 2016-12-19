@@ -31,7 +31,7 @@ public class InviteDialog extends DialogFragment {
     public InviteDialog() {
 
     }
-
+private int lastSelectedSpinnerPos = 0;
     public static final int SELECTED_SMS = 0;
     public static final int SELECTED_EMAIL = 1;
     ArrayList<String> availableEmail;
@@ -79,7 +79,7 @@ public class InviteDialog extends DialogFragment {
                         availableContactArrayAdapter.clear();
                         availableContactArrayAdapter.addAll(spinnerArray);
                         availableContactArrayAdapter.notifyDataSetChanged();
-                        if (spinnerArray.size() > 1) {
+                        if (lastSelectedSpinnerPos!=spinnerArray.size()- 1) {
                             etCustom.setVisibility(View.GONE);
                             isCustom = false;
                         } else {
@@ -94,7 +94,7 @@ public class InviteDialog extends DialogFragment {
                         availableContactArrayAdapter.clear();
                         availableContactArrayAdapter.addAll(spinnerArray);
                         availableContactArrayAdapter.notifyDataSetChanged();
-                        if (spinnerArray.size() > 1) {
+                        if (lastSelectedSpinnerPos!=spinnerArray.size()- 1) {
                             etCustom.setVisibility(View.GONE);
                             isCustom = false;
                         } else {
@@ -110,6 +110,7 @@ public class InviteDialog extends DialogFragment {
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                lastSelectedSpinnerPos = position;
                 if (position == spinnerArray.size() - 1) {
                     etCustom.setVisibility(View.VISIBLE);
                     if (selectedMode == SELECTED_SMS) {

@@ -13,31 +13,40 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.pri.android.splitbills.ContactsAdapter;
-import com.pri.android.splitbills.InviteDialog;
 import com.pri.android.splitbills.R;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 
-import static android.R.attr.id;
-
 /**
  * A fragment representing a list of Items.
  */
 public class ContactsFragment extends Fragment {
+    private static final String TAG = ContactsFragment.class.getName();
+    private DatabaseReference mUsersRef;
     Context mContext;
+    LinearLayout progressBar;
     static final int MY_PERMISSIONS_REQUEST_READ_CONTACTS = 1;
-    private  GetContactsInterfce getContactsListner;
-    private int mColumnCount = 1;
+    private Boolean isDataRetrieved = false;
+    private GetContactsInterfce getContactsListner;
+    private RecyclerView recyclerView;
     ArrayList<ContactClass> contactList = new ArrayList<>();
-    InviteDialog inviteDialog;
+    ArrayList<String> userEmails = new ArrayList<>();
+    ArrayList<String> userPhoneNumbers = new ArrayList<>();
+    ContactsAdapter contactsAdapter;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -65,21 +74,29 @@ public class ContactsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.contact_item_list, container, false);
-
+        progressBar = (LinearLayout) view.findViewById(R.id.contact_progress);
+         recyclerView = (RecyclerView) view.findViewById(R.id.contacts_list);
         // Set the adapter
-        if (view instanceof RecyclerView) {
-            Context context = view.getContext();
-            mContext = context;
-            RecyclerView recyclerView = (RecyclerView) view;
+        Context context = view.getContext();
+        mContext = context;
 
-            recyclerView.setLayoutManager(new LinearLayoutManager(context));
+        if (!isDataRetrieved) {
             initList(context);
-            recyclerView.setAdapter(new ContactsAdapter(contactList, getContext()));
-            getContactsListner.getContact(contactList);
-            DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(),
-                    LinearLayout.VERTICAL);
-            recyclerView.addItemDecoration(dividerItemDecoration);
+            isDataRetrieved = true;
+        } else {
+//            recyclerView.setAdapter(adapter);
         }
+
+        recyclerView.setLayoutManager(new LinearLayoutManager(context));
+
+        contactsAdapter = new ContactsAdapter(contactList, getContext());
+        recyclerView.setAdapter(contactsAdapter);
+
+        getContactsListner.getContact(contactList);
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(),
+                LinearLayout.VERTICAL);
+        recyclerView.addItemDecoration(dividerItemDecoration);
+
         return view;
     }
 
@@ -136,15 +153,6 @@ public class ContactsFragment extends Fragment {
         }
     }
 
-//    @Override
-//    public void onListFragmentInteraction(int position) {
-//        inviteDialog = new InviteDialog();
-//        Bundle bundle = new Bundle();
-//        bundle.putSerializable("contactClass",contactList.get(position));
-//        inviteDialog.setArguments(bundle);
-//        inviteDialog.show(getActivity().getFragmentManager(), "Invite");
-//    }
-
 
     public class ContactClass implements Serializable {
         public String name;
@@ -158,10 +166,31 @@ public class ContactsFragment extends Fragment {
         }
     }
 
+    public static class UserDetails {
+
+        public String phone;
+        public String name;
+        public String uid;
+        public String photoUrl;
+
+        public String email;
+
+        public UserDetails() {
+// Default constructor required for calls to DataSnapshot.getValue(UserDetails.class)
+        }
+
+        public UserDetails(String name, String phone, String photoUrl, String uid) {
+            this.name = name;
+            this.phone = phone;
+            this.photoUrl = photoUrl;
+            this.uid = uid;
+        }
+    }
+
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        getContactsListner = (GetContactsInterfce)context;
+        getContactsListner = (GetContactsInterfce) context;
     }
 
     public interface GetContactsInterfce {
@@ -173,6 +202,33 @@ public class ContactsFragment extends Fragment {
         * and save to @contactList
         * */
     private void readContacts() {
+
+        readContactsFromServer(new OnGetDataListener() {
+            @Override
+            public void onStart() {
+                progressBar.setVisibility(View.VISIBLE);
+
+                //DO SOME THING WHEN START GET DATA HERE
+            }
+
+            @Override
+            public void onSuccess() {
+                //DO SOME THING WHEN GET DATA SUCCESS HERE
+                readContactsFromDevice();
+                progressBar.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onFailed(DatabaseError databaseError) {
+                //DO SOME THING WHEN GET DATA FAILED HERE
+            }
+        });
+    }
+
+    private void readContactsFromDevice() {
+        ArrayList<String> tempEmails = new ArrayList<>(userEmails);
+        ArrayList<String> tempPhNumbers = new ArrayList<>(userPhoneNumbers);
+
         ContentResolver resolver = mContext.getContentResolver();
         Cursor c = resolver.query(
                 ContactsContract.Data.CONTENT_URI,
@@ -199,17 +255,28 @@ public class ContactsFragment extends Fragment {
             newContact = false;
             if (dataType.equals(ContactsContract.CommonDataKinds.Email.CONTENT_ITEM_TYPE)) {
                 email = data1;
-                isEmail = true;
+                if (!tempEmails.contains(email)) {
+                    isEmail = true;
+                } else {
+//                    tempEmails.remove(email);
+                    isEmail = false;
+                    Log.v(TAG, "email removed " + email);
+                }
             } else if (dataType.equals(ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE)) {
                 phoneNumber = data1;
                 phoneNumber = phoneNumber.replaceAll("\\-", "").replaceAll(" ", "").replaceAll("\\+9111", "").replaceAll("\\+91", "");
-                if (phoneNumber.length() >= 10) {
+                if (phoneNumber.length() >= 10 && !tempPhNumbers.contains(phoneNumber)) {
                     isPhoneNumber = true;
+                } else {
+//                    tempPhNumbers.remove(phoneNumber);
+                    isPhoneNumber = false;
+                    Log.v(TAG, "number removed" + phoneNumber);
                 }
             }
             if (!isEmail && !isPhoneNumber) {
                 continue;
             }
+
             if (previousId == id) {
                 if (previousContact != null) {
                     if (isEmail && !previousContact.email.contains(email)) {
@@ -225,7 +292,6 @@ public class ContactsFragment extends Fragment {
                 if (previousContact != null) {
                     contactList.add(previousContact);
                 }
-
             }
 
             if (newContact && (isPhoneNumber || isEmail)) {
@@ -233,10 +299,45 @@ public class ContactsFragment extends Fragment {
                 previousContact = currentContact;
                 previousId = id;
             }
-
         }
         contactList.add(previousContact);
-        System.out.println(id + ", name=" + contactList);
+        contactsAdapter.notifyDataSetChanged();
+//        System.out.println(id + ", name=" + contactList);
+
     }
 
+    private void readContactsFromServer(final OnGetDataListener onGetDataListener) {
+        onGetDataListener.onStart();
+        mUsersRef = FirebaseDatabase.getInstance().getReference().child("Users");
+        mUsersRef.addValueEventListener(new ValueEventListener() {
+
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot messageSnapshot : dataSnapshot.getChildren()) {
+                    String key = messageSnapshot.getKey();
+                    key = key.replace(",", ".");
+                    userEmails.add(key);
+                    UserDetails userDetails = messageSnapshot.getValue(UserDetails.class);
+                    userPhoneNumbers.add(userDetails.phone);
+                }
+                onGetDataListener.onSuccess();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                onGetDataListener.onFailed(databaseError);
+            }
+        });
+
+    }
+
+
+    public interface OnGetDataListener {
+        public void onStart();
+
+        public void onSuccess();
+
+        public void onFailed(DatabaseError databaseError);
+    }
 }
+

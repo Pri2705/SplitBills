@@ -26,6 +26,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.pri.android.splitbills.ContactsAdapter;
 import com.pri.android.splitbills.Fragment.ContactsFragment;
+import com.pri.android.splitbills.Fragment.FriendsFragment;
 import com.pri.android.splitbills.Fragment.GroupsFragment;
 import com.pri.android.splitbills.InviteDialog;
 import com.pri.android.splitbills.R;
@@ -228,7 +229,7 @@ public class MainActivity extends AppCompatActivity implements ContactsAdapter.O
         public Fragment getItem(int position) {
             switch (position) {
                 case 0: // Fragment # 0 - This will show FirstFragment
-//                    return FirstFragment.newInstance(0, "Page # 1");
+                    return FriendsFragment.newInstance("Friends", MainActivity.this);
                 case 1: // Fragment # 0 - This will show FirstFragment different title
                     return GroupsFragment.newInstance("Current Group", MainActivity.this);
                 case 2: // Fragment # 1 - This will show SecondFragment

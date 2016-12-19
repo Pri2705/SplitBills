@@ -14,4 +14,6 @@
     <string name="e_mail">E-mail</string>
     <string name="choose_method">choose method</string>
     <string name="send_invite">send invite</string>
+    <string name="loading_contacts">loading contacts</string>
+    <string name="loading_friends">Loading Friends</string>
 </resources>
