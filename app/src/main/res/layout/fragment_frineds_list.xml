@@ -1,42 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:name="com.pri.android.splitbills.ItemFragment"
+    android:name="com.pri.android.splitbills.Fragment.FriendsFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="Fragment.ContactsFragment">
+    tools:context="com.pri.android.splitbills.Fragment.FriendsFragment">
 
     <LinearLayout
         android:visibility="gone"
-        android:id="@+id/contact_progress"
-        android:layout_centerInParent="true"
+        android:id="@+id/friend_progress"
         android:layout_width="wrap_content"
-        android:orientation="vertical"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:orientation="vertical">
 
         <ProgressBar
-            android:layout_gravity="center"
             android:layout_width="65dp"
             android:layout_height="65dp"
-            />
+            android:layout_gravity="center" />
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
-            android:text="@string/loading_contacts" />
+            android:text="@string/loading_friends" />
 
     </LinearLayout>
 
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/contacts_list"
-        android:name="com.pri.android.splitbills.ItemFragment"
+        android:id="@+id/friends_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
         android:paddingTop="5dp"
         android:scrollbars="vertical"
         app:layoutManager="LinearLayoutManager"
-        tools:listitem="@layout/contact_item" />
+        tools:listitem="@layout/fragment_frineds" />
 </RelativeLayout>

@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "489217206958",
+    "firebase_url": "https://billsplit-bd1f6.firebaseio.com",
+    "project_id": "billsplit-bd1f6",
+    "storage_bucket": "billsplit-bd1f6.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:489217206958:android:c04cfe0d0e80a191",
+        "android_client_info": {
+          "package_name": "com.pri.android.splitbills"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "489217206958-a8v8pi9sdn73t5nlnpo547kv2b26semd.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC8kfVhALmMrxvU0WALix1LYSyDUGSxbi0"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "489217206958-a8v8pi9sdn73t5nlnpo547kv2b26semd.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
