@@ -44,6 +44,7 @@ public class NewBillActivity extends AppCompatActivity {
         sharedPreferences = getSharedPreferences(getString(R.string.my_prefs), MODE_PRIVATE);
 
         mFirebaseDatabase = FirebaseDatabase.getInstance();
+        mFirebaseDatabase.setPersistenceEnabled(true);
         mGroupHistoryDatabaseRef = mFirebaseDatabase.getReference().child(mModel.getGroupID()).child("History");
         mUserDetailsGroupDatabaseRef = mFirebaseDatabase.getReference().child("UserDetails").child(sharedPreferences.getString(getString(R.string.email), "").replace('.', ',')).child("Groups").child(mModel.getGroupID());
 
@@ -55,6 +56,9 @@ public class NewBillActivity extends AppCompatActivity {
         });
     }
 
+    // TODO: 02-01-2017 bill photo
+    // TODO: 02-01-2017 split bill amount
+    // TODO: 02-01-2017 view summary
     private void addBill() {
         BillObject bill = new BillObject();
         bill.setPaidBy(sharedPreferences.getString(getString(R.string.email), ""));

@@ -33,6 +33,8 @@ public class NewGroupActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_group);
+// TODO: 02-01-2017 add friends to group
+        // TODO: 02-01-2017  group dp
 
         SharedPreferences sharedPreferences = getSharedPreferences(getString(R.string.my_prefs), MODE_PRIVATE);
         final String email = sharedPreferences.getString(getString(R.string.email), "");
@@ -41,8 +43,8 @@ public class NewGroupActivity extends AppCompatActivity {
         mUserDetailsDatabaseRef = mFirebaseDatabase.getReference().child("UserDetails").child(email_replaced).child("Groups");
         mDatabaseRef = mFirebaseDatabase.getReference();
 
-        mGroupNameEt = (EditText)findViewById(R.id.group_name_et);
-        mCreateBt = (Button)findViewById(R.id.create_bt);
+        mGroupNameEt = (EditText) findViewById(R.id.group_name_et);
+        mCreateBt = (Button) findViewById(R.id.create_bt);
 
         mCreateBt.setOnClickListener(new View.OnClickListener() {
             @Override

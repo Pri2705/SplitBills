@@ -11,36 +11,43 @@ import com.pri.android.splitbills.Model.UserDetails;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class FrinedsRecyclerViewAdapter extends RecyclerView.Adapter<FrinedsRecyclerViewAdapter.ViewHolder> {
+/**
+ * Created by Parth on 31-12-2016.
+ */
 
-    private final List<UserDetails> mValues;
-    private Context mContext;
-//    private final OnListFragmentInteractionListener mListener;
+public class NonFriendRecyclerViewAdapter extends RecyclerView.Adapter<NonFriendRecyclerViewAdapter.ViewHolder> {
+    Context mContext;
+    private final ArrayList<UserDetails> mValues;
 
-    public FrinedsRecyclerViewAdapter(ArrayList<UserDetails> userEmailAndNames) {
-        mValues = userEmailAndNames;
-//        mListener = listener;
+    public NonFriendRecyclerViewAdapter(ArrayList<UserDetails> items, Context context) {
+        mValues = items;
+        mContext = context;
+//        try {
+//            this.mListener = ((OnListFragmentInteractionListener) context);
+//        } catch (ClassCastException e) {
+//            throw new ClassCastException("Activity must implement AdapterCallback.");
+//        }
     }
+
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.fragment_frineds, parent, false);
-        mContext = parent.getContext();
+                .inflate(R.layout.user_list_item, parent, false);
         return new ViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(final ViewHolder holder, int position) {
+    public void onBindViewHolder(final ViewHolder holder, final int position) {
+        UserDetails data = mValues.get(position);
         holder.mItem = mValues.get(position);
-        holder.etEmail.setText(mValues.get(position).email);
-        holder.etName.setText(mValues.get(position).name);
+        holder.etEmail.setText(data.email);
+        holder.etName.setText(data.name);
         Picasso.with(mContext)
-                .load(mValues.get(position).photoUrl)
+                .load(data.photoUrl)
                 .placeholder(R.drawable.avatar)
                 .error(R.drawable.avatar)
                 .into(holder.userAvatar);
@@ -48,10 +55,11 @@ public class FrinedsRecyclerViewAdapter extends RecyclerView.Adapter<FrinedsRecy
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
 //                if (null != mListener) {
 //                    // Notify the active callbacks interface (the activity, if the
 //                    // fragment is attached to one) that an item has been selected.
-//                    mListener.onListFragmentInteraction(holder.mItem);
+//                    mListener.onListFragmentInteraction(position);
 //                }
             }
         });
@@ -76,10 +84,7 @@ public class FrinedsRecyclerViewAdapter extends RecyclerView.Adapter<FrinedsRecy
             etName = (TextView) view.findViewById(R.id.user_name);
             userAvatar = (CircleImageView)view.findViewById(R.id.friend_avatar);
         }
-
-        @Override
-        public String toString() {
-            return super.toString() + " '" + etEmail.getText() + "'";
-        }
     }
+
+
 }

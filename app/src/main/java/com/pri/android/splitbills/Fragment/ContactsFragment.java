@@ -26,6 +26,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.pri.android.splitbills.ContactsAdapter;
+import com.pri.android.splitbills.Model.UserDetails;
 import com.pri.android.splitbills.R;
 
 import java.io.Serializable;
@@ -163,27 +164,6 @@ public class ContactsFragment extends Fragment {
             this.phoneNumber = phoneNumber;
             this.email = email;
             this.name = name;
-        }
-    }
-
-    public static class UserDetails {
-
-        public String phone;
-        public String name;
-        public String uid;
-        public String photoUrl;
-
-        public String email;
-
-        public UserDetails() {
-// Default constructor required for calls to DataSnapshot.getValue(UserDetails.class)
-        }
-
-        public UserDetails(String name, String phone, String photoUrl, String uid) {
-            this.name = name;
-            this.phone = phone;
-            this.photoUrl = photoUrl;
-            this.uid = uid;
         }
     }
 

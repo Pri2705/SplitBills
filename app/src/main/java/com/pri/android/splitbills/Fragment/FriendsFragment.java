@@ -1,8 +1,10 @@
 package com.pri.android.splitbills.Fragment;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -17,7 +19,9 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.pri.android.splitbills.Activity.FriendRequest;
 import com.pri.android.splitbills.FrinedsRecyclerViewAdapter;
+import com.pri.android.splitbills.Model.UserDetails;
 import com.pri.android.splitbills.R;
 
 import java.util.ArrayList;
@@ -25,28 +29,20 @@ import java.util.ArrayList;
 import static android.content.Context.MODE_PRIVATE;
 
 
-/**
- * A fragment representing a list of Items.
- * <p/>
- * Activities containing this fragment MUST implement the {@link OnListFragmentInteractionListener}
- * interface.
- */
 public class FriendsFragment extends Fragment {
 
-    // TODO: Customize parameters
     private static final String TAG = FriendsFragment.class.getName();
-    private int mColumnCount = 1;
     Context mContext;
     String loggedInEmail;
     private Boolean isDataRetrieved = false;
     LinearLayout progressBar;
     RecyclerView recyclerView;
+    FloatingActionButton floatingActionButton;
     ArrayList<String> friendsEmail = new ArrayList<>();
-    ArrayList<ContactsFragment.UserDetails> nonFriendUserDetails = new ArrayList<>();
-    ArrayList<ContactsFragment.UserDetails> friendUserDetails = new ArrayList<>();
+    ArrayList<UserDetails> nonFriendUserDetails = new ArrayList<>();
+    ArrayList<UserDetails> friendUserDetails = new ArrayList<>();
     private DatabaseReference mFriendsRef;
     private DatabaseReference mUsersRef;
-    private OnListFragmentInteractionListener mListener;
     private FrinedsRecyclerViewAdapter adapter;
 
     /**
@@ -83,13 +79,17 @@ public class FriendsFragment extends Fragment {
         if (!isDataRetrieved) {
             getFriends();
             isDataRetrieved = true;
-        }else{
+        } else {
             recyclerView.setAdapter(adapter);
         }
-//        getFriends();
-//        recyclerView.setLayoutManager(new LinearLayoutManager(context));
-//        adapter = new FrinedsRecyclerViewAdapter(friendUserDetails);
-//        recyclerView.setAdapter(adapter);
+        floatingActionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), FriendRequest.class);
+                intent.putExtra("nonFriends",nonFriendUserDetails);
+                startActivity(intent);
+            }
+        });
         return view;
     }
 
@@ -97,14 +97,6 @@ public class FriendsFragment extends Fragment {
     public void onAttach(Context context) {
         super.onAttach(context);
         mContext = context;
-//        if (context instanceof OnListFragmentInteractionListener) {
-//            mListener = (OnListFragmentInteractionListener) context;
-//        } else {
-//            throw new RuntimeException(context.toString()
-//                    + " must implement OnListFragmentInteractionListener");
-//        }
-
-//        getFriends(context);
     }
 
     private void getFriends() {
@@ -134,18 +126,17 @@ public class FriendsFragment extends Fragment {
 
         });
     }
-
-    private void readAllUsersFromServer(final OnGetDataListener listner) {
-//        onDataCInside[0] = 0;
+//TODO first time
+    private void readAllUsersFromServer(final OnGetDataListener listener) {
         mUsersRef = FirebaseDatabase.getInstance().getReference().child("Users");
         mUsersRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-//                onDataCInside[0] = 1;
                 for (DataSnapshot messageSnapshot : dataSnapshot.getChildren()) {
                     String key = messageSnapshot.getKey();
-                    ContactsFragment.UserDetails userDetails = messageSnapshot.getValue(ContactsFragment.UserDetails.class);
+                    UserDetails userDetails = messageSnapshot.getValue(UserDetails.class);
                     userDetails.email = key.replace(",", ".");
+// TODO                   saveTolocalDB(userDetails);
                     if (loggedInEmail.equals(key)) {
                         continue;//same user as logged in user
                     }
@@ -156,7 +147,7 @@ public class FriendsFragment extends Fragment {
                         nonFriendUserDetails.add(userDetails);
                     }
                 }
-                listner.onSuccess();
+                listener.onSuccess();
             }
 
             @Override
@@ -205,50 +196,20 @@ public class FriendsFragment extends Fragment {
     }
 
 
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
-    }
 
     void init(View view) {
+        floatingActionButton  = (FloatingActionButton)view.findViewById(R.id.add_fab);
         recyclerView = (RecyclerView) view.findViewById(R.id.friends_list);
         progressBar = (LinearLayout) view.findViewById(R.id.friend_progress);
 
     }
 
     /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface OnListFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onListFragmentInteraction();
-    }
-
-
+     * interface used for getting  data from firebase
+     * */
     public interface OnGetDataListener {
         public void onStart();
-
         public void onSuccess();
     }
 
-    public class UserEmailAndName {
-        public String userName;
-        public String userEmail;
-
-        public UserEmailAndName() {
-        }
-
-        public UserEmailAndName(String email, String name) {
-            userEmail = email;
-            userName = name;
-        }
-    }
 }

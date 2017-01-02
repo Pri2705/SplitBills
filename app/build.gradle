@@ -44,6 +44,7 @@ dependencies {
     compile 'com.firebaseui:firebase-ui-database:1.0.1'
     compile 'de.hdodenhof:circleimageview:2.1.0'
     compile 'com.squareup.picasso:picasso:2.5.2'
+    compile 'com.github.wrdlbrnft:sorted-list-adapter:0.2.0.1'
     testCompile 'junit:junit:4.12'
 }
 apply plugin: 'com.google.gms.google-services'

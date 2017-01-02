@@ -60,7 +60,6 @@ public class GroupsFragment extends Fragment {
     public GroupsFragment() {
     }
 
-    // TODO: Customize parameter initialization
     @SuppressWarnings("unused")
     public static GroupsFragment newInstance(String title, Context context) {
         GroupsFragment fragment = new GroupsFragment();
@@ -218,7 +217,6 @@ public class GroupsFragment extends Fragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnListFragmentInteractionListener {
-        // TODO: Update argument type and name
 //        void onListFragmentInteraction(DummyItem item);
     }
 

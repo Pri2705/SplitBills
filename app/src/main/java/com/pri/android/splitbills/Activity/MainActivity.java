@@ -65,6 +65,7 @@ public class MainActivity extends AppCompatActivity implements ContactsAdapter.O
 //
 //        mUsernameTv = (TextView)findViewById(R.id.usernameTv);
 //        signOutBt = (Button)findViewById(R.id.signoutBt);
+//// TODO: 02-01-2017 shift to splash screen
 
         mFirebaseAuth = FirebaseAuth.getInstance();
         mFirebaseDatabase = FirebaseDatabase.getInstance();
@@ -78,7 +79,7 @@ public class MainActivity extends AppCompatActivity implements ContactsAdapter.O
         ViewPager vpPager = (ViewPager) findViewById(R.id.vpPager);
         FragmentPagerAdapter adapterViewPager = new MyPagerAdapter(getSupportFragmentManager());
         vpPager.setAdapter(adapterViewPager);
-
+        vpPager.setCurrentItem(1);
         mAuthStateListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
