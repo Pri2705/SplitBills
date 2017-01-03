@@ -1,32 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
-    android:layout_height="96dp"
-    android:layout_marginTop="8dp"
-    android:orientation="vertical"
-    android:background="?android:attr/selectableItemBackground"
-    android:paddingEnd="16dp"
-    android:paddingStart="16dp">
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/friend_avatar"
-        android:layout_width="74dp"
-        android:layout_height="74dp"
-        android:src="@drawable/avatar"
-        app:civ_border_color="#FF000000"
-        app:civ_border_width="1dp" />
+    <data>
 
-    <TextView
-        android:id="@+id/user_name"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:ellipsize="end"
-        android:maxLines="1"
-        android:text="@string/username"
-android:layout_gravity="center_horizontal"
-        android:textAppearance="?attr/textAppearanceListItem"
-        android:textColor="@android:color/black"
-        android:textSize="20sp" />
+        <variable
+            name="listener"
+            type="com.pri.android.splitbills.SelectedFriendAdapter.Listener" />
+
+        <variable
+            name="model"
+            type="com.pri.android.splitbills.Model.UserDetails" />
+
+    </data>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/selected_friend_height"
+        android:background="?android:attr/selectableItemBackground"
+        android:onClick="@{view ->listener.onSelectedFriendClicked(model)}"
+        android:orientation="vertical"
+        >
+
+        <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/friend_avatar"
+            android:layout_width="55dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_height="55dp"
+            android:src="@drawable/avatar"
+            app:imageUrl="@{model.imageUrl}" />
+
+        <TextView
+            android:gravity="center_horizontal"
+            android:id="@+id/user_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:hint="@string/username"
+            android:maxLines="1"
+            android:maxLength="10"
+            android:ellipsize="marquee"
+            android:text="@{model.firstName}"
+            android:textSize="16sp" />
 
 
-</LinearLayout>
+    </LinearLayout>
+</layout>
